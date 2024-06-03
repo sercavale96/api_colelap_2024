@@ -1,0 +1,7 @@
+streamlit
+gunicorn
+uvicorn
+fastapi
+torch
+joblib
+transformers
