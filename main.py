@@ -22,6 +22,11 @@ class CPU_Unpickler(pickle.Unpickler):
         else:
             return super().find_class(module, name)
 
+
+def extract_model(compressed_model_path, extract_path):
+    with tarfile.open(compressed_model_path, "r:gz") as tar:
+        tar.extractall(path=extract_path)
+
 def load_model_and_tokenizer(model_path):
     try:
         # Cargar el modelo y el tokenizador desde el archivo .sav utilizando CPU_Unpickler
