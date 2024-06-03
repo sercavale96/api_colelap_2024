@@ -3,6 +3,7 @@ import torch
 import joblib
 import pickle
 import io
+import tarfile
 
 # Método para cargar el modelo y el tokenizador desde el archivo .sav
 """def load_model_and_tokenizer(model_path):
