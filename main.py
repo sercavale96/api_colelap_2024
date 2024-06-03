@@ -4,6 +4,7 @@ import joblib
 import pickle
 import io
 import tarfile
+import os
 
 # Método para cargar el modelo y el tokenizador desde el archivo .sav
 """def load_model_and_tokenizer(model_path):
@@ -44,7 +45,7 @@ app = FastAPI()
 def hello():
     return {'message':'Hello World'}
 
-@app.post('/predict') 
+"""@app.post('/predict') 
 def predict(request: dict):
     text = request['text']  # Asumo que el texto de entrada se envía en la clave 'text' del request
     #model_path = "Models/modelo_y_tokenizador.sav"
@@ -60,4 +61,29 @@ def predict(request: dict):
         outputs = model(**encoded_text)
         predicted_class = torch.argmax(outputs.logits).item()
 
+    return {'prediction': predicted_class}"""
+
+@app.post('/predict')
+def predict(request: dict):
+    text = request['text']
+    
+    compressed_model_path = "Models/modelo_bert.tar.gz"
+    extract_path = "Models/"
+    model_path = os.path.join(extract_path, "modelo_bert.pkl")
+    
+    # Descomprimir el modelo si no está ya descomprimido
+    if not os.path.exists(model_path):
+        extract_model(compressed_model_path, extract_path)
+    
+    # Carga el modelo y el tokenizer
+    model, tokenizer = load_model_and_tokenizer(model_path)
+    
+    # Preprocesamiento del texto
+    encoded_text = tokenizer(text, return_tensors="pt")
+    
+    # Desactiva el gradiente para mejorar la eficiencia en inferencia
+    with torch.no_grad():
+        outputs = model(**encoded_text)
+        predicted_class = torch.argmax(outputs.logits).item()
+    
     return {'prediction': predicted_class}
